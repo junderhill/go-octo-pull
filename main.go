@@ -18,6 +18,7 @@ func main() {
 		fmt.Printf("Start %s, End %s: Consumption (kwh) %f\n", c.Interval_start, c.Interval_end, c.Consumption)
 	}
 
+	fmt.Printf("Average Consumption (kwh) %f\n", sum/float64(len(consumption)))
 	fmt.Printf("Total consumption (kwh) %f\n", sum)
 
 }
