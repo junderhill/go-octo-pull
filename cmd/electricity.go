@@ -11,10 +11,10 @@ import (
 )
 
 type MeterReadOptions struct {
-	ApiKey       string
-	Mpan         string
-	SerialNumber string
-	Export       bool
+	ApiKey         string
+	Mpan           string
+	SerialNumber   string
+	ExportFilename string
 }
 
 func NewCmdElectricity() *cobra.Command {
@@ -32,7 +32,7 @@ func NewCmdElectricity() *cobra.Command {
 	electricityCmd.Flags().StringVar(&opts.ApiKey, "apikey", "", "Octopus API Key (Required)")
 	electricityCmd.Flags().StringVar(&opts.Mpan, "mpan", "", "Octopus Meter MPAN (Required)")
 	electricityCmd.Flags().StringVar(&opts.SerialNumber, "serialnumber", "", "Octopus Meter Serial Number(Required)")
-	electricityCmd.Flags().BoolVar(&opts.Export, "export", false, "Export to CSV")
+	electricityCmd.Flags().StringVar(&opts.ExportFilename, "export", "", "Export to CSV")
 
 	electricityCmd.MarkFlagRequired("apikey")
 	electricityCmd.MarkFlagRequired("mpan")
@@ -45,8 +45,8 @@ func GetMeterReadings(opts *MeterReadOptions) {
 	fmt.Println("Obtaining electricity meter readings with API Key: ", opts.ApiKey)
 	consumption := apiclient.GetRecent(opts.ApiKey, opts.Mpan, opts.SerialNumber)
 
-	if opts.Export {
-		CreateCSVFromResult(consumption)
+	if opts.ExportFilename != "" {
+		CreateCSVFromResult(opts, consumption)
 	}
 
 	sum := 0.0
@@ -59,8 +59,8 @@ func GetMeterReadings(opts *MeterReadOptions) {
 	fmt.Printf("Total consumption (kwh) %f\n", sum)
 }
 
-func CreateCSVFromResult(consumption models.ConsumptionResponse) {
-	file, err := os.Create("result.csv")
+func CreateCSVFromResult(opts *MeterReadOptions, consumption models.ConsumptionResponse) {
+	file, err := os.Create(opts.ExportFilename)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
