@@ -17,7 +17,7 @@ func getClient(apiKey string) *gentleman.Client {
 	return cli
 }
 
-func GetRecent(apiKey string, mpan string, serialnumber string) []models.Consumption {
+func GetRecent(apiKey string, mpan string, serialnumber string) models.ConsumptionResponse {
 	cli := getClient(apiKey)
 	req := cli.Request()
 	req.Method("GET")
@@ -36,7 +36,7 @@ func GetRecent(apiKey string, mpan string, serialnumber string) []models.Consump
 		panic(err)
 	}
 
-	return consumptionResponse.Results
+	return consumptionResponse
 }
 
 func authorisationValue(apiKey string) string {
